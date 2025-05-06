@@ -1,9 +1,9 @@
-// src/app/admin/games/page.tsx
+// Updated GamesPage with ModalWrapper integration
 'use client';
 
 import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import Modal from '@/app/components/Modal'; // Import the Modal component
+import ModalWrapper from '@/app/components/ModalWrapper';
 
 interface Game {
   id: string;
@@ -15,267 +15,165 @@ interface Game {
 }
 
 export default function GamesPage() {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const [games, setGames] = useState<Game[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  
-  // Modal state for adding/editing games
   const [showModal, setShowModal] = useState(false);
   const [editingGame, setEditingGame] = useState<Game | null>(null);
-  const [formData, setFormData] = useState({
-    name: '',
-    slug: '',
-    active: true,
-  });
+  const [formData, setFormData] = useState({ name: '', slug: '', active: true });
   const [processing, setProcessing] = useState(false);
-  
-  // Fetch games
+
+  useEffect(() => {
+    if (session?.user) fetchGames();
+  }, [session]);
+
   const fetchGames = async () => {
     try {
       setLoading(true);
       const response = await fetch('/api/admin/games');
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch games');
-      }
-      
+      if (!response.ok) throw new Error('Failed to fetch games');
       const data = await response.json();
       setGames(data);
-      setLoading(false);
     } catch (err) {
-      console.error('Error fetching games:', err);
       setError('Failed to fetch games. Please try again later.');
+    } finally {
       setLoading(false);
     }
   };
-  
-  // Initial fetch
-  useEffect(() => {
-    if (session?.user) {
-      fetchGames();
-    }
-  }, [session]);
-  
-  // Handle form input changes
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value, type } = e.target as HTMLInputElement;
-    setFormData({
-      ...formData,
-      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
-    });
+    const { name, value, type, checked } = e.target as HTMLInputElement;
+    setFormData({ ...formData, [name]: type === 'checkbox' ? checked : value });
   };
-  
-  // Handle checkbox change
-  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.checked,
-    });
-  };
-  
-  // Handle form submission
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     try {
       setProcessing(true);
-      
       const url = '/api/admin/games';
       const method = editingGame ? 'PATCH' : 'POST';
-      const payload = editingGame 
-        ? { id: editingGame.id, ...formData }
-        : formData;
-      
-      const response = await fetch(url, {
+      const payload = editingGame ? { id: editingGame.id, ...formData } : formData;
+      const res = await fetch(url, {
         method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `Failed to ${editingGame ? 'update' : 'create'} game`);
-      }
-      
-      // Refresh games list
-      await fetchGames();
-      
-      // Close modal and reset form
+      if (!res.ok) throw new Error('Error saving game');
+      fetchGames();
       setShowModal(false);
       setEditingGame(null);
-      setFormData({
-        name: '',
-        slug: '',
-        active: true,
-      });
+      setFormData({ name: '', slug: '', active: true });
     } catch (err: any) {
-      console.error('Error saving game:', err);
-      setError(err.message || `Failed to ${editingGame ? 'update' : 'create'} game`);
+      setError(err.message);
     } finally {
       setProcessing(false);
     }
   };
 
-  // Close modal handler
-  const handleCloseModal = () => {
-    if (!processing) {
-      setShowModal(false);
-    }
-  };
-  
   return (
-    <div>
-      <div className="md:flex md:items-center md:justify-between mb-6">
-        <div className="flex-1 min-w-0">
-          <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
-            Games Management
-          </h2>
-        </div>
-        <div className="mt-4 flex md:mt-0 md:ml-4">
-          <button
-            type="button"
-            onClick={() => {
-              setEditingGame(null);
-              setFormData({
-                name: '',
-                slug: '',
-                active: true,
-              });
-              setShowModal(true);
-            }}
-            className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          >
-            Add New Game
-          </button>
-        </div>
-      </div>
-      
-      {error && (
-        <div className="mb-4 rounded-md bg-red-50 p-4">
-          <div className="flex">
-            <div className="flex-shrink-0">
-              <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-              </svg>
-            </div>
-            <div className="ml-3">
-              <p className="text-sm text-red-700">{error}</p>
-            </div>
-          </div>
-        </div>
-      )}
-      
-      {/* Display games list */}
-      <div className="bg-white shadow overflow-hidden sm:rounded-md">
-        {loading ? (
-          <div className="p-6 text-center">
-            <div className="flex justify-center">
-              <div className="animate-spin h-10 w-10 text-indigo-600 rounded-full border-4 border-t-transparent border-indigo-600"></div>
-            </div>
-            <p className="mt-2 text-gray-700">Loading games...</p>
-          </div>
-        ) : games.length === 0 ? (
-          <div className="p-6 text-center">
-            <p className="text-gray-500">No games found.</p>
-          </div>
-        ) : (
-          <ul className="divide-y divide-gray-200">
-            {games.map((game) => (
-              <li key={game.id} className="px-6 py-4 flex items-center justify-between">
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900">{game.name}</h3>
-                  <p className="text-sm text-gray-500">Slug: {game.slug}</p>
-                </div>
-                <div className="flex items-center">
-                  <span className={`px-2 py-1 text-xs rounded-full ${game.active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-                    {game.active ? 'Active' : 'Inactive'}
-                  </span>
-                  <button
-                    className="ml-4 text-indigo-600 hover:text-indigo-900"
-                    onClick={() => {
-                      setEditingGame(game);
-                      setFormData({
-                        name: game.name,
-                        slug: game.slug,
-                        active: game.active,
-                      });
-                      setShowModal(true);
-                    }}
-                  >
-                    Edit
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-      
-      {/* Add/Edit Game Modal using the Modal Component */}
-      {showModal && (
-        <Modal 
-          isOpen={showModal}
-          onClose={handleCloseModal}
-          title={editingGame ? 'Edit Game' : 'Add New Game'}
-          processing={processing}
-          primaryActionLabel={processing ? 'Processing...' : editingGame ? 'Update' : 'Create'}
-          onPrimaryAction={() => handleSubmit({ preventDefault: () => {} } as React.FormEvent)}
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold text-gray-900">Games Management</h2>
+        <button
+          onClick={() => {
+            setEditingGame(null);
+            setFormData({ name: '', slug: '', active: true });
+            setShowModal(true);
+          }}
+          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700"
         >
-          <form onSubmit={(e) => { e.preventDefault(); handleSubmit(e); }} className="space-y-4">
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                Name <span className="text-red-500">*</span>
-              </label>
+          Add New Game
+        </button>
+      </div>
+
+      {loading ? (
+        <p className="text-gray-600">Loading...</p>
+      ) : error ? (
+        <div className="rounded-md bg-red-50 p-4 mb-4 text-red-700">{error}</div>
+      ) : (
+        <ul className="divide-y divide-gray-200 bg-white shadow rounded-md">
+          {games.map((game) => (
+            <li key={game.id} className="p-4 flex justify-between items-center">
+              <div>
+                <div className="text-sm font-medium text-gray-900">{game.name}</div>
+                <div className="text-sm text-gray-500">{game.slug}</div>
+                <span className={`inline-block text-xs font-semibold mt-1 ${game.active ? 'text-green-700' : 'text-gray-500'}`}>
+                  {game.active ? 'Active' : 'Inactive'}
+                </span>
+              </div>
+              <button
+                onClick={() => {
+                  setEditingGame(game);
+                  setFormData({ name: game.name, slug: game.slug, active: game.active });
+                  setShowModal(true);
+                }}
+                className="text-indigo-600 hover:text-indigo-900 text-sm"
+              >
+                Edit
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {/* Modal via Portal */}
+      {showModal && (
+        <ModalWrapper onBackdropClick={() => setShowModal(false)}>
+          <form onSubmit={handleSubmit}>
+            <h3 className="text-lg font-semibold mb-4">{editingGame ? 'Edit Game' : 'Add Game'}</h3>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-1">Name</label>
               <input
-                type="text"
-                id="name"
                 name="name"
                 value={formData.name}
                 onChange={handleInputChange}
                 required
-                className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                className="w-full border px-3 py-2 rounded shadow-sm"
               />
             </div>
-            
-            <div>
-              <label htmlFor="slug" className="block text-sm font-medium text-gray-700">
-                Slug <span className="text-red-500">*</span>
-              </label>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-1">Slug</label>
               <input
-                type="text"
-                id="slug"
                 name="slug"
                 value={formData.slug}
                 onChange={handleInputChange}
                 required
-                className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                className="w-full border px-3 py-2 rounded shadow-sm"
               />
-              <p className="mt-1 text-xs text-gray-500">
-                Unique identifier for the game. Use only lowercase letters, numbers, and hyphens.
-              </p>
             </div>
-            
-            <div className="flex items-start">
-              <div className="flex items-center h-5">
-                <input
-                  id="active"
-                  name="active"
-                  type="checkbox"
-                  checked={formData.active}
-                  onChange={handleCheckboxChange}
-                  className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
-                />
-              </div>
-              <div className="ml-3 text-sm">
-                <label htmlFor="active" className="font-medium text-gray-700">Active</label>
-                <p className="text-gray-500">Game will be available for deposits and withdrawals</p>
-              </div>
+
+            <div className="flex items-center mb-4">
+              <input
+                type="checkbox"
+                name="active"
+                checked={formData.active}
+                onChange={handleInputChange}
+                className="mr-2"
+              />
+              <label className="text-sm">Active</label>
+            </div>
+
+            <div className="flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setShowModal(false)}
+                className="px-4 py-2 border rounded"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 bg-indigo-600 text-white rounded"
+                disabled={processing}
+              >
+                {processing ? 'Saving...' : editingGame ? 'Update' : 'Create'}
+              </button>
             </div>
           </form>
-        </Modal>
+        </ModalWrapper>
       )}
     </div>
   );

@@ -1,5 +1,6 @@
+"use client";
 import React, { useState } from 'react';
-import Layout from '../layout';
+import Layout from '@/app/components/AppLayout';
 
 // Supported games data
 const GAMES = [
@@ -307,3 +308,12 @@ const WithdrawPage: React.FC = () => {
                   </div>
                 </div>
               </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </Layout>
+  );
+};
+
+export default WithdrawPage;

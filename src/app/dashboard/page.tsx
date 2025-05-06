@@ -1,5 +1,6 @@
+"use client";
 import React, { useState } from 'react';
-import Layout from '../layout';
+import Layout from '@/app/components/AppLayout';
 
 // Mock transaction data
 const MOCK_TRANSACTIONS = [

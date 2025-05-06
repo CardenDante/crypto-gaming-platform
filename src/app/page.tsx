@@ -1,5 +1,6 @@
+"use client";
 import React, { useState, useEffect } from 'react';
-import Layout from './layout';
+import Layout from '@/app/components/AppLayout';
 import Link from 'next/link';
 
 // Mock data for promotions

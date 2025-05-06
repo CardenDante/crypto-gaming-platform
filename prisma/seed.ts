@@ -1,4 +1,4 @@
-import { PrismaClient, UserRole } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { hash } from 'bcrypt';
 
 const prisma = new PrismaClient();
@@ -20,7 +20,7 @@ async function main() {
         email: adminEmail,
         name: 'Admin',
         hashedPassword,
-        role: UserRole.ADMIN
+        role: 'ADMIN' // Use string instead of enum
       }
     });
     

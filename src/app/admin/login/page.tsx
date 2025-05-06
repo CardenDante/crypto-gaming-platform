@@ -23,21 +23,30 @@ export default function LoginPage() {
       setLoading(true);
       setError('');
       
+      console.log('Attempting to sign in with email:', email);
+      
       const result = await signIn('credentials', {
         redirect: false,
         email,
         password,
       });
       
-      if (result?.error) {
-        setError('Invalid email or password');
-        setLoading(false);
-        return;
-      }
+      console.log('Sign in result:', result);
       
-      // Redirect to admin dashboard
-      router.push('/admin');
-      router.refresh();
+      if (result?.error) {
+        // With this check instead
+        if (result?.error && result.error !== 'undefined') {
+          console.error('Authentication error:', result.error);
+          setError('Invalid email or password');
+          setLoading(false);
+          return;
+        }
+        
+        console.log('Authentication successful, redirecting to admin dashboard');
+        // Redirect to admin dashboard
+        router.push('/admin');
+        router.refresh();
+      }
     } catch (error) {
       console.error('Login error:', error);
       setError('An error occurred during login');

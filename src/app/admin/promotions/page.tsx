@@ -82,7 +82,7 @@ export default function AdminPromotions() {
       setProcessing(true);
       
       // Prepare payload
-      const payload = {
+      const payload: Partial<Promotion> = {
         ...formData,
         imageUrl: formData.imageUrl || null,
       };

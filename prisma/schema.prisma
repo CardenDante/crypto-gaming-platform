@@ -1,15 +1,103 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql" // Changed from postgresql to mysql
   url      = env("DATABASE_URL")
+}
+
+// Admin users for the admin panel access
+model User {
+  id             String    @id @default(cuid())
+  name           String?
+  email          String    @unique
+  hashedPassword String
+  role           UserRole  @default(ADMIN)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+// Gaming platforms supported
+model Game {
+  id           String        @id @default(cuid())
+  name         String
+  slug         String        @unique
+  active       Boolean       @default(true)
+  deposits     Deposit[]
+  withdrawals  Withdrawal[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+// Deposits to user gaming accounts
+model Deposit {
+  id            String          @id @default(cuid())
+  gameId        String
+  game          Game            @relation(fields: [gameId], references: [id])
+  username      String
+  amount        Float
+  status        TransactionStatus @default(PENDING)
+  paymentMethod PaymentMethod   @default(BITCOIN)
+  address       String
+  txId          String?         // Blockchain transaction ID
+  notes         String?         @db.Text
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+}
+
+// Withdrawals from user gaming accounts
+model Withdrawal {
+  id            String          @id @default(cuid())
+  gameId        String
+  game          Game            @relation(fields: [gameId], references: [id])
+  username      String
+  amount        Float
+  netAmount     Float           // Amount after fees
+  status        TransactionStatus @default(PENDING)
+  walletType    PaymentMethod   @default(BITCOIN)
+  walletAddress String
+  txId          String?         // Blockchain transaction ID
+  notes         String?         @db.Text
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+}
+
+// Promotions displayed on the platform
+model Promotion {
+  id          String    @id @default(cuid())
+  title       String
+  description String    @db.Text
+  imageUrl    String?
+  active      Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+// System configuration values
+model SystemConfig {
+  id          String    @id @default(cuid())
+  key         String    @unique
+  value       String    @db.Text
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+enum UserRole {
+  ADMIN
+  SUPPORT
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  REJECTED
+}
+
+enum PaymentMethod {
+  BITCOIN
+  LIGHTNING
 }

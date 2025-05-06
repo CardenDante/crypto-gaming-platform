@@ -1,52 +1,78 @@
-"use client";
+'use client';
+
 import React, { useState, useEffect } from 'react';
-import Layout from '@/app/components/AppLayout';
 import Link from 'next/link';
+import AppLayout from './components/AppLayout';
 
-// Mock data for promotions
-const PROMOTIONS = [
-  {
-    id: 'promo1',
-    title: '50% Bonus on First Deposit',
-    description: 'New players get 50% extra on their first deposit up to 0.005 BTC',
-    bgColor: 'from-purple-500 to-indigo-600'
-  },
-  {
-    id: 'promo2',
-    title: 'Weekend Cashback',
-    description: 'Play on weekends and get 10% cashback on all your activity',
-    bgColor: 'from-green-500 to-emerald-600'
-  },
-  {
-    id: 'promo3',
-    title: 'Refer a Friend',
-    description: 'Earn 0.001 BTC for each friend you refer who makes a deposit',
-    bgColor: 'from-orange-500 to-amber-600'
-  }
-];
+// Types
+interface Promotion {
+  id: string;
+  title: string;
+  description: string;
+  imageUrl: string | null;
+  active: boolean;
+}
 
-// Game options
-const GAMES = [
-  { id: 'orionstars', name: 'Orionstars', image: '/images/game1.jpg' },
-  { id: 'fishtable', name: 'Fish Table', image: '/images/game2.jpg' },
-  { id: 'luckytiger', name: 'Lucky Tiger', image: '/images/game3.jpg' },
-  { id: 'goldendragon', name: 'Golden Dragon', image: '/images/game4.jpg' }
-];
+interface Game {
+  id: string;
+  name: string;
+  slug: string;
+  active: boolean;
+}
 
-const HomePage: React.FC = () => {
+export default function HomePage() {
+  // States
+  const [promotions, setPromotions] = useState<Promotion[]>([]);
+  const [games, setGames] = useState<Game[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [currentPromo, setCurrentPromo] = useState(0);
 
+  // Fetch games and promotions
   useEffect(() => {
-    // Auto-rotate promotions
-    const interval = setInterval(() => {
-      setCurrentPromo((prev) => (prev + 1) % PROMOTIONS.length);
-    }, 5000);
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        
+        // Fetch active promotions
+        const promotionsRes = await fetch('/api/admin/promotions?activeOnly=true');
+        if (promotionsRes.ok) {
+          const promotionsData = await promotionsRes.json();
+          setPromotions(promotionsData);
+        }
+        
+        // Fetch active games
+        const gamesRes = await fetch('/api/admin/games');
+        if (gamesRes.ok) {
+          const gamesData = await gamesRes.json();
+          // Filter only active games
+          const activeGames = gamesData.filter((game: Game) => game.active);
+          setGames(activeGames);
+        }
+        
+        setLoading(false);
+      } catch (err) {
+        console.error('Error fetching data:', err);
+        setLoading(false);
+      }
+    };
     
-    return () => clearInterval(interval);
+    fetchData();
   }, []);
 
+  // Auto-rotate promotions if they exist
+  useEffect(() => {
+    if (promotions.length > 1) {
+      const interval = setInterval(() => {
+        setCurrentPromo((prev) => (prev + 1) % promotions.length);
+      }, 5000);
+      
+      return () => clearInterval(interval);
+    }
+  }, [promotions]);
+
   return (
-    <Layout title="LagoonsGaming - Secure Bitcoin Deposits & Withdrawals">
+    <AppLayout title="CryptoGaming - Secure Bitcoin Deposits & Withdrawals">
       <div className="space-y-10">
         {/* Hero Section */}
         <section className="bg-white rounded-xl shadow-md overflow-hidden">
@@ -55,9 +81,9 @@ const HomePage: React.FC = () => {
               <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-indigo-700 mix-blend-multiply" />
             </div>
             <div className="relative max-w-7xl mx-auto py-24 px-4 sm:py-32 sm:px-6 lg:px-8">
-              <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">Fast withrawals and Recharges</h1>
+              <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">Fast Bitcoin Gaming Payments</h1>
               <p className="mt-6 max-w-3xl text-xl text-indigo-100">
-                Seamlessly deposit and withdraw Bitcoin for your favorite online fishsnipames.
+                Seamlessly deposit and withdraw Bitcoin for your favorite online games.
                 No complicated setup. Just connect, play, and cash out.
               </p>
               <div className="mt-10 max-w-sm sm:flex sm:max-w-none">
@@ -80,51 +106,79 @@ const HomePage: React.FC = () => {
           </div>
         </section>
 
-        {/* Current Promotion Carousel */}
-        <section className="bg-white rounded-xl shadow-md overflow-hidden">
-          <div className="px-4 py-5 sm:px-6">
-            <h2 className="text-xl font-bold text-gray-900">Current Promotions</h2>
-          </div>
-          <div className="border-t border-gray-200">
-            <div className="relative h-64 sm:h-80 overflow-hidden">
-              {PROMOTIONS.map((promo, idx) => (
-                <div
-                  key={promo.id}
-                  className={`absolute inset-0 transition-opacity duration-500 bg-gradient-to-r ${promo.bgColor} ${
-                    idx === currentPromo ? 'opacity-100' : 'opacity-0 pointer-events-none'
-                  }`}
-                >
-                  <div className="h-full flex items-center">
-                    <div className="px-4 sm:px-6 lg:px-8">
-                      <h3 className="text-2xl font-bold text-white sm:text-3xl">{promo.title}</h3>
-                      <p className="mt-2 text-lg text-white text-opacity-90 max-w-3xl">
-                        {promo.description}
-                      </p>
-                      <button className="mt-6 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-indigo-700 bg-white hover:bg-indigo-50">
-                        Learn More
-                      </button>
+        {/* Current Promotion Carousel - Only show if promotions exist */}
+        {promotions.length > 0 && (
+          <section className="bg-white rounded-xl shadow-md overflow-hidden">
+            <div className="px-4 py-5 sm:px-6">
+              <h2 className="text-xl font-bold text-gray-900">Current Promotions</h2>
+            </div>
+            <div className="border-t border-gray-200">
+              <div className="relative h-64 sm:h-80 overflow-hidden">
+                {promotions.map((promo, idx) => {
+                  // Define a default background color if no image
+                  const bgColor = idx % 3 === 0 
+                    ? 'from-purple-500 to-indigo-600' 
+                    : idx % 3 === 1 
+                      ? 'from-green-500 to-emerald-600' 
+                      : 'from-orange-500 to-amber-600';
+                  
+                  return (
+                    <div
+                      key={promo.id}
+                      className={`absolute inset-0 transition-opacity duration-500 ${
+                        idx === currentPromo ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                      }`}
+                    >
+                      {promo.imageUrl ? (
+                        <div 
+                          className="h-full bg-cover bg-center"
+                          style={{ backgroundImage: `url(${promo.imageUrl})` }}
+                        >
+                          <div className="h-full w-full flex items-center bg-black bg-opacity-50">
+                            <div className="px-4 sm:px-6 lg:px-8">
+                              <h3 className="text-2xl font-bold text-white sm:text-3xl">{promo.title}</h3>
+                              <p className="mt-2 text-lg text-white text-opacity-90 max-w-3xl">
+                                {promo.description}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className={`h-full bg-gradient-to-br ${bgColor}`}>
+                          <div className="h-full flex items-center">
+                            <div className="px-4 sm:px-6 lg:px-8">
+                              <h3 className="text-2xl font-bold text-white sm:text-3xl">{promo.title}</h3>
+                              <p className="mt-2 text-lg text-white text-opacity-90 max-w-3xl">
+                                {promo.description}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
+                  );
+                })}
+                
+                {/* Carousel controls - only if there's more than one promotion */}
+                {promotions.length > 1 && (
+                  <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+                    {promotions.map((_, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => setCurrentPromo(idx)}
+                        className={`w-2.5 h-2.5 rounded-full ${
+                          idx === currentPromo ? 'bg-white' : 'bg-white bg-opacity-50'
+                        }`}
+                      >
+                        <span className="sr-only">Promotion {idx + 1}</span>
+                      </button>
+                    ))}
                   </div>
-                </div>
-              ))}
-              
-              {/* Carousel controls */}
-              <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-                {PROMOTIONS.map((_, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setCurrentPromo(idx)}
-                    className={`w-2.5 h-2.5 rounded-full ${
-                      idx === currentPromo ? 'bg-white' : 'bg-white bg-opacity-50'
-                    }`}
-                  >
-                    <span className="sr-only">Promotion {idx + 1}</span>
-                  </button>
-                ))}
+                )}
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         {/* How It Works */}
         <section className="bg-white rounded-xl shadow-md overflow-hidden">
@@ -171,31 +225,33 @@ const HomePage: React.FC = () => {
         </section>
 
         {/* Supported Games */}
-        <section className="bg-white rounded-xl shadow-md overflow-hidden">
-          <div className="px-4 py-5 sm:px-6">
-            <h2 className="text-xl font-bold text-gray-900">Supported Games</h2>
-          </div>
-          <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
-            <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
-              {GAMES.map((game) => (
-                <div key={game.id} className="group relative">
-                  <div className="relative w-full h-40 bg-gray-200 rounded-lg overflow-hidden group-hover:opacity-75">
-                    <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-indigo-600 to-purple-700">
-                      <span className="text-white font-medium">{game.name}</span>
-                    </div>
-                  </div>
-                  <h3 className="mt-4 text-sm text-gray-700">
-                    <Link href={`/deposit?game=${game.id}`}>
-                      <span className="absolute inset-0" />
-                      {game.name}
-                    </Link>
-                  </h3>
-                  <p className="mt-1 text-sm text-gray-500">Play Now</p>
-                </div>
-              ))}
+        {games.length > 0 && (
+          <section className="bg-white rounded-xl shadow-md overflow-hidden">
+            <div className="px-4 py-5 sm:px-6">
+              <h2 className="text-xl font-bold text-gray-900">Supported Games</h2>
             </div>
-          </div>
-        </section>
+            <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
+              <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
+                {games.map((game) => (
+                  <div key={game.id} className="group relative">
+                    <div className="relative w-full h-40 bg-gray-200 rounded-lg overflow-hidden group-hover:opacity-75">
+                      <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-indigo-600 to-purple-700">
+                        <span className="text-white font-medium">{game.name}</span>
+                      </div>
+                    </div>
+                    <h3 className="mt-4 text-sm text-gray-700">
+                      <Link href={`/deposit?game=${game.slug}`}>
+                        <span className="absolute inset-0" />
+                        {game.name}
+                      </Link>
+                    </h3>
+                    <p className="mt-1 text-sm text-gray-500">Play Now</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* Why Choose Us */}
         <section className="bg-white rounded-xl shadow-md overflow-hidden">
@@ -298,8 +354,6 @@ const HomePage: React.FC = () => {
           </div>
         </section>
       </div>
-    </Layout>
+    </AppLayout>
   );
-};
-
-export default HomePage;
+}

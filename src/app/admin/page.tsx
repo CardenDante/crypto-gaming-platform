@@ -43,43 +43,65 @@ export default function AdminDashboard() {
   const [updateStatus, setUpdateStatus] = useState<'COMPLETED' | 'REJECTED' | null>(null);
   
   // Fetch transactions
-  const fetchTransactions = async () => {
-    try {
-      setLoading(true);
-      
-      // Fetch deposits
-      const depositsRes = await fetch('/api/deposits?status=' + (filterStatus === 'all' ? '' : filterStatus));
-      const deposits = await depositsRes.json();
-      
-      // Fetch withdrawals
-      const withdrawalsRes = await fetch('/api/withdrawals?status=' + (filterStatus === 'all' ? '' : filterStatus));
-      const withdrawals = await withdrawalsRes.json();
-      
-      // Combine and format transactions
-      const allTransactions = [
-        ...deposits.map((d: any) => ({
-          ...d,
-          type: 'deposit' as const,
-        })),
-        ...withdrawals.map((w: any) => ({
-          ...w,
-          type: 'withdrawal' as const,
-        })),
-      ];
-      
-      // Sort by date (newest first)
-      allTransactions.sort((a, b) => 
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      );
-      
-      setTransactions(allTransactions);
-      setLoading(false);
-    } catch (err) {
-      console.error('Error fetching transactions:', err);
-      setError('Failed to fetch transactions. Please try again later.');
-      setLoading(false);
+const fetchTransactions = async () => {
+  try {
+    setLoading(true);
+    
+    // Log the request URLs to help debugging
+    console.log('Fetching deposits from:', '/api/deposits');
+    console.log('Fetching withdrawals from:', '/api/withdrawals');
+    
+    // Fetch deposits
+    const depositsRes = await fetch('/api/deposits');
+    console.log('Deposits response status:', depositsRes.status);
+    
+    if (!depositsRes.ok) {
+      const errorText = await depositsRes.text();
+      console.error('Error fetching deposits:', errorText);
+      throw new Error('Failed to fetch deposits');
     }
-  };
+    
+    const deposits = await depositsRes.json();
+    console.log('Deposits data:', deposits);
+    
+    // Fetch withdrawals
+    const withdrawalsRes = await fetch('/api/withdrawals');
+    console.log('Withdrawals response status:', withdrawalsRes.status);
+    
+    if (!withdrawalsRes.ok) {
+      const errorText = await withdrawalsRes.text();
+      console.error('Error fetching withdrawals:', errorText);
+      throw new Error('Failed to fetch withdrawals');
+    }
+    
+    const withdrawals = await withdrawalsRes.json();
+    console.log('Withdrawals data:', withdrawals);
+    
+    // Combine and format transactions
+    const allTransactions: Transaction[] = [
+      ...deposits.map((d: Omit<Transaction, 'type'>) => ({
+      ...d,
+      type: 'deposit',
+      })),
+      ...withdrawals.map((w: Omit<Transaction, 'type'>) => ({
+      ...w,
+      type: 'withdrawal',
+      })),
+    ];
+    
+    // Sort by date (newest first)
+    allTransactions.sort((a, b) => 
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+    
+    setTransactions(allTransactions);
+    setLoading(false);
+  } catch (err) {
+    console.error('Error fetching transactions:', err);
+    setError('Failed to fetch transactions. Please try again later.');
+    setLoading(false);
+  }
+};
   
   // Initial fetch
   useEffect(() => {

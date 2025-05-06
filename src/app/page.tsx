@@ -46,7 +46,7 @@ const HomePage: React.FC = () => {
   }, []);
 
   return (
-    <Layout title="CryptoGaming - Secure Bitcoin Deposits & Withdrawals">
+    <Layout title="LagoonsGaming - Secure Bitcoin Deposits & Withdrawals">
       <div className="space-y-10">
         {/* Hero Section */}
         <section className="bg-white rounded-xl shadow-md overflow-hidden">
@@ -55,9 +55,9 @@ const HomePage: React.FC = () => {
               <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-indigo-700 mix-blend-multiply" />
             </div>
             <div className="relative max-w-7xl mx-auto py-24 px-4 sm:py-32 sm:px-6 lg:px-8">
-              <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">Fast Bitcoin Gaming Payments</h1>
+              <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">Fast withrawals and Recharges</h1>
               <p className="mt-6 max-w-3xl text-xl text-indigo-100">
-                Seamlessly deposit and withdraw Bitcoin for your favorite online games.
+                Seamlessly deposit and withdraw Bitcoin for your favorite online fishsnipames.
                 No complicated setup. Just connect, play, and cash out.
               </p>
               <div className="mt-10 max-w-sm sm:flex sm:max-w-none">

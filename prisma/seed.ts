@@ -30,9 +30,9 @@ async function main() {
   // Add default games
   const defaultGames = [
     { name: 'Orionstars', slug: 'orionstars' },
-    { name: 'Fish Table', slug: 'fishtable' },
-    { name: 'Lucky Tiger', slug: 'luckytiger' },
-    { name: 'Golden Dragon', slug: 'goldendragon' }
+    { name: 'Firekirin', slug: 'Firekirin' },
+    { name: 'Panda Master', slug: 'Pandamaster' },
+    { name: 'Juwa', slug: 'Juwa' }
   ];
   
   for (const game of defaultGames) {

@@ -53,7 +53,7 @@ export default function SupportPage() {
   };
 
   return (
-    <AppLayout title="Customer Support - Lagoons Gaming">
+    <AppLayout title="Customer Support - Skywinners Gaming">
       <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <div className="bg-white shadow-md rounded-lg overflow-hidden">
           <div className="px-4 py-5 sm:px-6 bg-gradient-to-r from-blue-600 to-purple-700">

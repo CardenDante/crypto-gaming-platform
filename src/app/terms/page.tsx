@@ -5,7 +5,7 @@ import AppLayout from '../components/AppLayout';
 
 export default function TermsOfServicePage() {
   return (
-    <AppLayout title="Terms of Service - Lagoons Gaming">
+    <AppLayout title="Terms of Service - Skywinners Gaming">
       <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <div className="bg-white shadow-md rounded-lg overflow-hidden">
           <div className="px-4 py-5 sm:px-6 bg-gradient-to-r from-blue-600 to-purple-700">
@@ -17,7 +17,7 @@ export default function TermsOfServicePage() {
           
           <div className="px-4 py-5 sm:p-6 prose prose-blue max-w-none">
             <p className="text-gray-700">
-              Welcome to Lagoons Gaming. Please read these Terms of Service ("Terms") carefully before using our website and services.
+              Welcome to Skywinners Gaming. Please read these Terms of Service ("Terms") carefully before using our website and services.
             </p>
             
             <h2 className="text-xl font-bold text-gray-900 mt-8">1. Acceptance of Terms</h2>
@@ -57,12 +57,12 @@ export default function TermsOfServicePage() {
             
             <h2 className="text-xl font-bold text-gray-900 mt-8">6. Intellectual Property</h2>
             <p>
-              All content on our services, including but not limited to text, graphics, logos, icons, images, audio clips, and software, is the property of Lagoons Gaming or its licensors and is protected by copyright, trademark, and other intellectual property laws.
+              All content on our services, including but not limited to text, graphics, logos, icons, images, audio clips, and software, is the property of Skywinners Gaming or its licensors and is protected by copyright, trademark, and other intellectual property laws.
             </p>
             
             <h2 className="text-xl font-bold text-gray-900 mt-8">7. Limitation of Liability</h2>
             <p>
-              To the maximum extent permitted by law, Lagoons Gaming shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of profits or revenues, whether incurred directly or indirectly, or any loss of data, use, goodwill, or other intangible losses, resulting from:
+              To the maximum extent permitted by law, Skywinners Gaming shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of profits or revenues, whether incurred directly or indirectly, or any loss of data, use, goodwill, or other intangible losses, resulting from:
             </p>
             <ul className="list-disc pl-5 mt-2 space-y-1">
               <li>Your use of or inability to use our services</li>
@@ -83,7 +83,7 @@ export default function TermsOfServicePage() {
             
             <h2 className="text-xl font-bold text-gray-900 mt-8">10. Governing Law</h2>
             <p>
-              These Terms shall be governed by and construed in accordance with the laws of the jurisdiction in which Lagoons Gaming operates, without regard to its conflict of law provisions.
+              These Terms shall be governed by and construed in accordance with the laws of the jurisdiction in which Skywinners Gaming operates, without regard to its conflict of law provisions.
             </p>
             
             <h2 className="text-xl font-bold text-gray-900 mt-8">11. Contact Us</h2>

@@ -73,7 +73,7 @@ export default function HomePage() {
   }, [promotions]);
 
   return (
-    <AppLayout title="Lagoons Gaming - #1 Fish Games & Slots | Instant BTC Payments">
+    <AppLayout title="Skywinners Gaming - #1 Fish Games & Slots | Instant BTC Payments">
       <div className="space-y-10">
         {/* Hero Section */}
         <section className="bg-white rounded-xl shadow-md overflow-hidden">

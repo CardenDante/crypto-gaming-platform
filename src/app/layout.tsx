@@ -5,7 +5,7 @@ import NextAuthSessionProvider from '@/providers/SessionProvider';
 import WhatsAppButton from './components/WhatsAppButton';
 
 export const metadata: Metadata = {
-  title: 'Lagoons Gaming',
+  title: 'Skywinners Gaming',
   description: 'Deposit and withdraw money for your favorite games',
 };
 
@@ -20,7 +20,7 @@ export default function RootLayout({
         <NextAuthSessionProvider>
           {children}
         </NextAuthSessionProvider>
-        <WhatsAppButton phoneNumber={'254796280700'} message='I am ready to play, How do I deposit?'/>
+        <WhatsAppButton phoneNumber={'16058469918'} message='I am ready to play, How do I deposit?'/>
       </body>
     </html>
   );

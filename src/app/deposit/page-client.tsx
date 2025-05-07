@@ -478,7 +478,7 @@ function DepositForm() {
 // Main component that wraps DepositForm with Suspense
 export default function DepositPage() {
   return (
-    <AppLayout title="Instant Recharge - Lagoons Gaming">
+    <AppLayout title="Instant Recharge - Skywinners Gaming">
       <Suspense fallback={
         <div className="max-w-lg mx-auto p-8 flex justify-center">
           <div className="flex flex-col items-center">

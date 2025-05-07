@@ -5,7 +5,7 @@ import AppLayout from '../components/AppLayout';
 
 export default function PrivacyPolicyPage() {
   return (
-    <AppLayout title="Privacy Policy - Lagoons Gaming">
+    <AppLayout title="Privacy Policy - Skywinners Gaming">
       <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <div className="bg-white shadow-md rounded-lg overflow-hidden">
           <div className="px-4 py-5 sm:px-6 bg-gradient-to-r from-blue-600 to-purple-700">
@@ -17,7 +17,7 @@ export default function PrivacyPolicyPage() {
           
           <div className="px-4 py-5 sm:p-6 prose prose-blue max-w-none">
             <p className="text-gray-700">
-              At Lagoons Gaming, we value your privacy and are committed to protecting your personal information. This Privacy Policy explains how we collect, use, and safeguard your information when you use our services.
+              At Skywinners Gaming, we value your privacy and are committed to protecting your personal information. This Privacy Policy explains how we collect, use, and safeguard your information when you use our services.
             </p>
             
             <h2 className="text-xl font-bold text-gray-900 mt-8">1. Information We Collect</h2>

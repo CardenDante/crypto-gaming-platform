@@ -3,6 +3,7 @@
 import React, { ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import WhatsAppButton from './WhatsAppButton';
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -159,6 +160,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
         <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
           {children}
         </div>
+        <WhatsAppButton phoneNumber={'16058469918'} message='I am ready to play, How do I deposit?'/>
       </main>
 
       {/* Footer */}

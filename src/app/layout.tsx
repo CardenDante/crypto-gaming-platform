@@ -6,7 +6,7 @@ import WhatsAppButton from './components/WhatsAppButton';
 
 export const metadata: Metadata = {
   title: 'Lagoons Gaming',
-  description: 'Deposit and withdraw cryptocurrency for your favorite games',
+  description: 'Deposit and withdraw money for your favorite games',
 };
 
 export default function RootLayout({

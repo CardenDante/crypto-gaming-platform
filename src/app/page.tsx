@@ -278,7 +278,7 @@ export default function HomePage() {
               <div className="group relative">
                 <div className="relative w-full h-40 bg-gray-200 rounded-lg overflow-hidden group-hover:opacity-75">
                   <img 
-                    src="/games/orionstars.jpg" 
+                    src="/games/Orionstars.jpg" 
                     alt="Orionstars" 
                     className="w-full h-full object-cover"
                     onError={(e) => {
@@ -324,7 +324,7 @@ export default function HomePage() {
               <div className="group relative">
                 <div className="relative w-full h-40 bg-gray-200 rounded-lg overflow-hidden group-hover:opacity-75">
                   <img 
-                    src="/games/pandamaster.jpg" 
+                    src="/games/Pandamaster.jpg" 
                     alt="Pandamaster" 
                     className="w-full h-full object-cover"
                     onError={(e) => {

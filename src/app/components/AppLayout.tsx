@@ -81,7 +81,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
                     : 'text-indigo-100 hover:bg-indigo-700'
                 }`}
               >
-                Dashboard
+                Transactions
               </Link>
             </nav>
             

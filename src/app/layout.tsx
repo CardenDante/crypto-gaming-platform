@@ -5,7 +5,7 @@ import NextAuthSessionProvider from '@/providers/SessionProvider';
 import WhatsAppButton from './components/WhatsAppButton';
 
 export const metadata: Metadata = {
-  title: 'Crypto Gaming Payment System',
+  title: 'Lagoons Gaming',
   description: 'Deposit and withdraw cryptocurrency for your favorite games',
 };
 

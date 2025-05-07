@@ -139,7 +139,7 @@ export default function DashboardPage() {
   });
   
   return (
-    <AppLayout title="Dashboard - Crypto Gaming Payment System">
+    <AppLayout title="Dashboard - Lagoons Gaming">
       <div className="space-y-6">
         {/* Stats Cards */}
         {/* <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">

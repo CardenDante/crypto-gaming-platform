@@ -11,7 +11,7 @@ interface AppLayoutProps {
 
 const AppLayout: React.FC<AppLayoutProps> = ({ 
   children, 
-  title = 'Crypto Gaming Payment System' 
+  title = 'Lagoons Gaming' 
 }) => {
   const pathname = usePathname();
   

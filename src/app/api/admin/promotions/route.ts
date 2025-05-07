@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 
+// Maximum length allowed for imageUrl (adjust based on your DB schema)
+const MAX_IMAGE_URL_LENGTH = 255; // Standard VARCHAR length in most DBs
+
 // GET handler - Get all promotions
 export async function GET(request: NextRequest) {
   try {
@@ -45,6 +48,14 @@ export async function POST(request: NextRequest) {
     const data = await request.json();
     const { title, description, imageUrl, active } = data;
     
+    // Validate imageUrl length if provided
+    if (imageUrl && imageUrl.length > MAX_IMAGE_URL_LENGTH) {
+      return NextResponse.json(
+        { error: `Image URL must be less than ${MAX_IMAGE_URL_LENGTH} characters` },
+        { status: 400 }
+      );
+    }
+    
     // Create the promotion
     const promotion = await prisma.promotion.create({
       data: {
@@ -83,6 +94,14 @@ export async function PATCH(request: NextRequest) {
     if (!id) {
       return NextResponse.json(
         { error: 'Promotion ID is required' },
+        { status: 400 }
+      );
+    }
+    
+    // Validate imageUrl length if provided
+    if (imageUrl !== undefined && imageUrl !== null && imageUrl.length > MAX_IMAGE_URL_LENGTH) {
+      return NextResponse.json(
+        { error: `Image URL must be less than ${MAX_IMAGE_URL_LENGTH} characters` },
         { status: 400 }
       );
     }

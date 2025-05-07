@@ -166,7 +166,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
         <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
           <div className="md:flex md:items-center md:justify-between">
             <div className="text-center md:text-left">
-              <p className="text-sm">© {new Date().getFullYear()} LagoonsGaming Payment System</p>
+              <p className="text-sm">© {new Date().getFullYear()} LagoonsGaming</p>
             </div>
             <div className="mt-4 md:mt-0 flex justify-center md:justify-end space-x-6">
               <a href="terms" className="text-gray-400 hover:text-white">

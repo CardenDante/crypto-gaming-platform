@@ -1,11 +1,10 @@
-// src/app/layout.tsx
 import type { Metadata } from 'next';
 import './globals.css';
 import NextAuthSessionProvider from '@/providers/SessionProvider';
 import WhatsAppButton from './components/WhatsAppButton';
 
 export const metadata: Metadata = {
-  title: 'Skywinners Gaming',
+  title: 'Skywinners Gaming',
   description: 'Deposit and withdraw money for your favorite games',
 };
 
@@ -15,8 +14,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body>
+    <html lang="en" className="overflow-x-hidden">
+      <body className="overflow-x-hidden max-w-full">
         <NextAuthSessionProvider>
           {children}
         </NextAuthSessionProvider>

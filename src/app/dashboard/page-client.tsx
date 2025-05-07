@@ -142,7 +142,7 @@ export default function DashboardPage() {
     <AppLayout title="Dashboard - Crypto Gaming Payment System">
       <div className="space-y-6">
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
+        {/* <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
           <div className="bg-white overflow-hidden shadow rounded-lg">
             <div className="px-4 py-5 sm:p-6">
               <div className="flex items-center">
@@ -236,7 +236,8 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
-        
+         */}
+
         {/* Transaction History */}
         <div className="bg-white shadow rounded-lg overflow-hidden">
           <div className="px-4 py-5 sm:px-6 bg-white border-b border-gray-200">
@@ -246,7 +247,7 @@ export default function DashboardPage() {
                   Transaction History
                 </h3>
                 <p className="mt-1 text-sm text-gray-500">
-                  View all your deposits and withdrawals
+                  Track all your deposits and withdrawals here.
                 </p>
               </div>
               <div className="flex-shrink-0 mt-4 sm:mt-0">

@@ -35,6 +35,7 @@ export default function DepositPage() {
   const [game, setGame] = useState('');
   const [username, setUsername] = useState('');
   const [amount, setAmount] = useState('');
+  const [usdAmount, setUsdAmount] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<'BITCOIN' | 'LIGHTNING'>('BITCOIN');
   
   const [loading, setLoading] = useState(false);
@@ -42,6 +43,9 @@ export default function DepositPage() {
   const [error, setError] = useState('');
   const [deposit, setDeposit] = useState<Deposit | null>(null);
   const [copied, setCopied] = useState(false);
+  
+  // Current Bitcoin price in USD (would come from an API in a real app)
+  const [btcPrice, setBtcPrice] = useState(94182); // Example price: $60,000 per BTC
 
   // Fetch available games
   useEffect(() => {
@@ -77,6 +81,20 @@ export default function DepositPage() {
     
     fetchGames();
   }, [searchParams]);
+
+  // Convert USD to BTC
+  const convertUsdToBtc = (usd: string): string => {
+    if (!usd || isNaN(parseFloat(usd))) return '';
+    const btcValue = parseFloat(usd) / btcPrice;
+    return btcValue.toFixed(8);
+  };
+
+  // Handle USD amount change
+  const handleUsdAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const usdValue = e.target.value;
+    setUsdAmount(usdValue);
+    setAmount(convertUsdToBtc(usdValue));
+  };
 
   // Handle deposit form submission
   const handleSubmit = async (e: React.FormEvent) => {
@@ -146,13 +164,13 @@ export default function DepositPage() {
   };
 
   return (
-    <AppLayout title="Deposit - Crypto Gaming Payment System">
+    <AppLayout title="Instant Recharge - FishKing Casino">
       <div className="max-w-lg mx-auto">
         <div className="bg-white shadow-md rounded-lg overflow-hidden">
-          <div className="px-4 py-5 sm:px-6 bg-gradient-to-r from-purple-600 to-indigo-600">
-            <h2 className="text-xl font-bold text-white">Make a Deposit</h2>
-            <p className="mt-1 text-sm text-indigo-100">
-              Deposit Bitcoin to your gaming account
+          <div className="px-4 py-5 sm:px-6 bg-gradient-to-r from-blue-600 to-purple-700">
+            <h2 className="text-xl font-bold text-white">Instant Recharge</h2>
+            <p className="mt-1 text-sm text-blue-100">
+              Deposit funds to your gaming account in seconds
             </p>
           </div>
           
@@ -256,29 +274,34 @@ export default function DepositPage() {
                 </div>
                 
                 <div>
-                  <label htmlFor="amount" className="block text-sm font-medium text-gray-700">
-                    Amount (BTC)
+                  <label htmlFor="usdAmount" className="block text-sm font-medium text-gray-700">
+                    Amount (USD)
                   </label>
                   <div className="mt-1 relative rounded-md shadow-sm">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <span className="text-gray-500 sm:text-sm">$</span>
+                    </div>
                     <input
                       type="number"
-                      name="amount"
-                      id="amount"
-                      value={amount}
-                      onChange={(e) => setAmount(e.target.value)}
-                      className="block w-full py-2 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      placeholder="0.001"
-                      step="0.00000001"
-                      min="0.00000001"
+                      name="usdAmount"
+                      id="usdAmount"
+                      value={usdAmount}
+                      onChange={handleUsdAmountChange}
+                      className="block w-full pl-7 py-2 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      placeholder="10.00"
+                      step="0.01"
+                      min="5"
                       required
                     />
-                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                      <span className="text-gray-500 sm:text-sm">BTC</span>
-                    </div>
                   </div>
                   <p className="mt-1 text-xs text-gray-500">
-                    Minimum deposit: 0.0001 BTC
+                    Minimum deposit: $5.00
                   </p>
+                  
+                  <div className="mt-3 bg-gray-50 p-2 rounded-md">
+                    <p className="text-xs text-gray-500">Equivalent: {amount} BTC</p>
+                    <p className="text-xs text-gray-500">Rate: 1 BTC = ${btcPrice.toLocaleString()}</p>
+                  </div>
                 </div>
                 
                 <div>
@@ -330,7 +353,7 @@ export default function DepositPage() {
                       I agree to the terms
                     </label>
                     <p className="text-gray-500">
-                      I understand that deposits are manually processed and may take some time.
+                      I understand that funds will be credited to my account instantly after payment confirmation.
                     </p>
                   </div>
                 </div>
@@ -375,7 +398,7 @@ export default function DepositPage() {
               <div>
                 <h3 className="text-lg font-medium leading-6 text-gray-900">Payment Instructions</h3>
                 <p className="mt-2 text-sm text-gray-500">
-                  Please send {deposit.amount} BTC to the following address:
+                  Please send (${(parseFloat(deposit.amount.toString()) * btcPrice).toFixed(2)}) to the following address:
                 </p>
               </div>
               
@@ -413,19 +436,18 @@ export default function DepositPage() {
                 </button>
               </div>
               
-              <div className="mt-6 bg-yellow-50 border-l-4 border-yellow-400 p-4">
+              <div className="mt-6 bg-green-50 border-l-4 border-green-400 p-4">
                 <div className="flex">
                   <div className="flex-shrink-0">
-                    <svg className="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                    <svg className="h-5 w-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                     </svg>
                   </div>
                   <div className="ml-3">
-                    <h3 className="text-sm font-medium text-yellow-800">Important notice</h3>
-                    <div className="mt-2 text-sm text-yellow-700">
+                    <h3 className="text-sm font-medium text-green-800">Fast Processing</h3>
+                    <div className="mt-2 text-sm text-green-700">
                       <p>
-                        Your deposit will be processed manually after confirmation. Please allow some time for it to be credited to your account.
-                        If you have any issues, please contact support with your transaction details.
+                        Your deposit will be processed automatically and credited to your account within seconds after the network confirmation.
                       </p>
                     </div>
                   </div>

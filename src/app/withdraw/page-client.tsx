@@ -35,6 +35,7 @@ export default function WithdrawPage() {
   const [game, setGame] = useState('');
   const [username, setUsername] = useState('');
   const [amount, setAmount] = useState('');
+  const [usdAmount, setUsdAmount] = useState('');
   const [walletAddress, setWalletAddress] = useState('');
   const [walletType, setWalletType] = useState<'BITCOIN' | 'LIGHTNING'>('BITCOIN');
   
@@ -43,6 +44,9 @@ export default function WithdrawPage() {
   const [error, setError] = useState('');
   const [withdrawal, setWithdrawal] = useState<Withdrawal | null>(null);
   const [networkFee, setNetworkFee] = useState<number>(0.0001);
+  
+  // Current Bitcoin price in USD (would come from an API in a real app)
+ const [btcPrice, setBtcPrice] = useState(94182); // Example price: $60,000 per BTC
   
   // Fetch available games and network fee
   useEffect(() => {
@@ -83,6 +87,40 @@ export default function WithdrawPage() {
     fetchGamesAndConfig();
   }, []);
   
+  // Convert USD to BTC
+  const convertUsdToBtc = (usd: string): string => {
+    if (!usd || isNaN(parseFloat(usd))) return '';
+    const btcValue = parseFloat(usd) / btcPrice;
+    return btcValue.toFixed(8);
+  };
+
+  // Handle USD amount change
+  const handleUsdAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const usdValue = e.target.value;
+    setUsdAmount(usdValue);
+    setAmount(convertUsdToBtc(usdValue));
+  };
+  
+  // Calculate the USD equivalent of network fee
+  const networkFeeUsd = (networkFee * btcPrice).toFixed(2);
+  
+  // Calculate the amount that will be received after fees (in BTC)
+  const receiveAmount = () => {
+    if (!amount) return '0';
+    
+    const amountVal = parseFloat(amount);
+    if (isNaN(amountVal)) return '0';
+    
+    const received = Math.max(0, amountVal - networkFee);
+    return received.toFixed(8);
+  };
+  
+  // Calculate the USD value that will be received after fees
+  const receiveAmountUsd = () => {
+    const btcReceived = parseFloat(receiveAmount());
+    return (btcReceived * btcPrice).toFixed(2);
+  };
+  
   // Handle withdrawal form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -106,7 +144,7 @@ export default function WithdrawPage() {
       }
       
       if (amountFloat <= networkFee) {
-        setError(`Amount must be greater than the network fee of ${networkFee} BTC`);
+        setError(`Amount must be greater than the network fee of ${networkFee} BTC ($${networkFeeUsd})`);
         setLoading(false);
         return;
       }
@@ -141,25 +179,14 @@ export default function WithdrawPage() {
     }
   };
   
-  // Calculate the amount that will be received after fees
-  const receiveAmount = () => {
-    if (!amount) return '0';
-    
-    const amountVal = parseFloat(amount);
-    if (isNaN(amountVal)) return '0';
-    
-    const received = Math.max(0, amountVal - networkFee);
-    return received.toFixed(8);
-  };
-  
   return (
-    <AppLayout title="Withdraw - Crypto Gaming Payment System">
+    <AppLayout title="Fast Cashout - FishKing Casino">
       <div className="max-w-lg mx-auto">
         <div className="bg-white shadow-md rounded-lg overflow-hidden">
-          <div className="px-4 py-5 sm:px-6 bg-gradient-to-r from-purple-600 to-indigo-600">
-            <h2 className="text-xl font-bold text-white">Request Withdrawal</h2>
-            <p className="mt-1 text-sm text-indigo-100">
-              Withdraw your funds to your Bitcoin wallet
+          <div className="px-4 py-5 sm:px-6 bg-gradient-to-r from-blue-600 to-purple-700">
+            <h2 className="text-xl font-bold text-white">Fast Cashout</h2>
+            <p className="mt-1 text-sm text-blue-100">
+              Withdraw your winnings in minutes
             </p>
           </div>
           
@@ -167,10 +194,58 @@ export default function WithdrawPage() {
             <div className="px-4 py-5 sm:p-6 flex justify-center">
               <div className="flex flex-col items-center">
                 <svg
-                  className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  className="animate-spin h-10 w-10 text-indigo-600 mb-4"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                <p className="text-gray-500">Loading available games...</p>
+              </div>
+            </div>
+          ) : error ? (
+            <div className="px-4 py-5 sm:p-6">
+              <div className="rounded-md bg-red-50 p-4">
+                <div className="flex">
+                  <div className="flex-shrink-0">
+                    <svg
+                      className="h-5 w-5 text-red-400"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </div>
+                  <div className="ml-3">
+                    <h3 className="text-sm font-medium text-red-800">{error}</h3>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-4 flex justify-center">
+                <button
+                  onClick={() => window.location.reload()}
+                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
                   Try Again
-                </svg>
+                </button>
               </div>
             </div>
           ) : !withdrawal ? (
@@ -215,29 +290,34 @@ export default function WithdrawPage() {
                 </div>
                 
                 <div>
-                  <label htmlFor="amount" className="block text-sm font-medium text-gray-700">
-                    Amount (BTC)
+                  <label htmlFor="usdAmount" className="block text-sm font-medium text-gray-700">
+                    Amount (USD)
                   </label>
                   <div className="mt-1 relative rounded-md shadow-sm">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <span className="text-gray-500 sm:text-sm">$</span>
+                    </div>
                     <input
                       type="number"
-                      name="amount"
-                      id="amount"
-                      value={amount}
-                      onChange={(e) => setAmount(e.target.value)}
-                      className="block w-full py-2 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      placeholder="0.001"
-                      step="0.00000001"
-                      min={networkFee > 0 ? (networkFee + 0.00000001).toFixed(8) : '0.00000001'}
+                      name="usdAmount"
+                      id="usdAmount"
+                      value={usdAmount}
+                      onChange={handleUsdAmountChange}
+                      className="block w-full pl-7 py-2 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      placeholder="10.00"
+                      step="0.01"
+                      min={(networkFee * btcPrice + 0.01).toFixed(2)}
                       required
                     />
-                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                      <span className="text-gray-500 sm:text-sm">BTC</span>
-                    </div>
                   </div>
                   <p className="mt-1 text-xs text-gray-500">
-                    Minimum withdrawal: {(networkFee + 0.00000001).toFixed(8)} BTC
+                    Minimum withdrawal: ${(networkFee * btcPrice + 5).toFixed(2)}
                   </p>
+                  
+                  <div className="mt-3 bg-gray-50 p-2 rounded-md">
+                    <p className="text-xs text-gray-500">Equivalent: {amount} BTC</p>
+                    <p className="text-xs text-gray-500">Rate: 1 BTC = ${btcPrice.toLocaleString()}</p>
+                  </div>
                 </div>
                 
                 <div>
@@ -276,23 +356,23 @@ export default function WithdrawPage() {
                   </p>
                 </div>
                 
-                <div className="bg-gray-50 p-4 rounded-md">
+                {/* <div className="bg-gray-50 p-4 rounded-md">
                   <h4 className="text-sm font-medium text-gray-700">Withdrawal Summary</h4>
                   <div className="mt-2 space-y-2">
                     <div className="flex justify-between">
                       <span className="text-sm text-gray-500">Requested amount:</span>
-                      <span className="text-sm font-medium">{amount || '0'} BTC</span>
+                      <span className="text-sm font-medium">${usdAmount || '0'} / {amount || '0'} BTC</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-sm text-gray-500">Network fee:</span>
-                      <span className="text-sm font-medium">{networkFee} BTC</span>
+                      <span className="text-sm font-medium">${networkFeeUsd} / {networkFee} BTC</span>
                     </div>
                     <div className="border-t border-gray-200 pt-2 flex justify-between">
                       <span className="text-sm font-medium text-gray-700">You will receive:</span>
-                      <span className="text-sm font-bold">{receiveAmount()} BTC</span>
+                      <span className="text-sm font-bold">${receiveAmountUsd()} / {receiveAmount()} BTC</span>
                     </div>
                   </div>
-                </div>
+                </div> */}
                 
                 <div className="flex items-start">
                   <div className="flex items-center h-5">
@@ -309,7 +389,7 @@ export default function WithdrawPage() {
                       I confirm this request
                     </label>
                     <p className="text-gray-500">
-                      I understand that withdrawals are manually processed and may take up to 24 hours.
+                      I understand that my funds will be sent to my wallet within 15 minutes after approval.
                     </p>
                   </div>
                 </div>
@@ -362,7 +442,7 @@ export default function WithdrawPage() {
                     <h3 className="text-sm font-medium text-green-800">Withdrawal Request Received</h3>
                     <div className="mt-2 text-sm text-green-700">
                       <p>
-                        Your withdrawal request has been successfully submitted. Our team will process it as soon as possible.
+                        Your withdrawal request has been successfully submitted. Funds will be sent to your wallet instantly.
                       </p>
                     </div>
                   </div>
@@ -385,12 +465,16 @@ export default function WithdrawPage() {
                     </div>
                     <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
                       <dt className="text-sm font-medium text-gray-500">Amount</dt>
-                      <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{withdrawal.amount} BTC</dd>
+                      <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                        ${(withdrawal.amount * btcPrice).toFixed(2)} / {withdrawal.amount} BTC
+                      </dd>
                     </div>
-                    <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
+                    {/* <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
                       <dt className="text-sm font-medium text-gray-500">After Fees</dt>
-                      <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{withdrawal.netAmount} BTC</dd>
-                    </div>
+                      <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                        ${(withdrawal.netAmount * btcPrice).toFixed(2)} / {withdrawal.netAmount} BTC
+                      </dd>
+                    </div> */}
                     <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
                       <dt className="text-sm font-medium text-gray-500">Wallet Address</dt>
                       <dd className="mt-1 text-sm font-mono text-gray-900 sm:mt-0 sm:col-span-2 break-all">
@@ -401,7 +485,7 @@ export default function WithdrawPage() {
                       <dt className="text-sm font-medium text-gray-500">Status</dt>
                       <dd className="mt-1 sm:mt-0 sm:col-span-2">
                         <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                          Pending
+                          Processing
                         </span>
                       </dd>
                     </div>
@@ -442,10 +526,10 @@ export default function WithdrawPage() {
                     </svg>
                   </div>
                   <div className="ml-3">
-                    <h3 className="text-sm font-medium text-blue-800">Processing Time</h3>
+                    <h3 className="text-sm font-medium text-blue-800">Fast Processing</h3>
                     <div className="mt-2 text-sm text-blue-700">
                       <p>
-                        Withdrawals are processed manually within 24 hours during business days. You'll be notified when your withdrawal is complete.
+                        Your withdrawal will be processed automatically within 15 minutes. You'll receive a confirmation email when your funds are sent.
                       </p>
                     </div>
                   </div>

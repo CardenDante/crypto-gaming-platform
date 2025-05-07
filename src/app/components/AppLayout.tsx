@@ -169,17 +169,13 @@ const AppLayout: React.FC<AppLayoutProps> = ({
               <p className="text-sm">© {new Date().getFullYear()} LagoonsGaming Payment System</p>
             </div>
             <div className="mt-4 md:mt-0 flex justify-center md:justify-end space-x-6">
-              <a href="#" className="text-gray-400 hover:text-white">
+              <a href="terms" className="text-gray-400 hover:text-white">
                 <span className="sr-only">Terms of Service</span>
                 Terms
               </a>
-              <a href="#" className="text-gray-400 hover:text-white">
+              <a href="/privacy" className="text-gray-400 hover:text-white">
                 <span className="sr-only">Privacy Policy</span>
                 Privacy
-              </a>
-              <a href="#" className="text-gray-400 hover:text-white">
-                <span className="sr-only">Support</span>
-                Support
               </a>
             </div>
           </div>

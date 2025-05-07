@@ -73,7 +73,7 @@ export default function HomePage() {
   }, [promotions]);
 
   return (
-    <AppLayout title="FishKing Casino - #1 Fish Games & Slots | Instant BTC Payments">
+    <AppLayout title="Lagoons Gaming - #1 Fish Games & Slots | Instant BTC Payments">
       <div className="space-y-10">
         {/* Hero Section */}
         <section className="bg-white rounded-xl shadow-md overflow-hidden">
@@ -520,9 +520,9 @@ export default function HomePage() {
                 </Link>
               </div>
               <div className="ml-3 inline-flex">
-                <Link href="/promotions" className="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-500 bg-opacity-60 hover:bg-opacity-70">
+                {/* <Link href="/promotions" className="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-500 bg-opacity-60 hover:bg-opacity-70">
                   See All Promotions
-                </Link>
+                </Link> */}
               </div>
             </div>
           </div>

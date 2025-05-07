@@ -180,7 +180,7 @@ export default function WithdrawPage() {
   };
   
   return (
-    <AppLayout title="Fast Cashout - FishKing Casino">
+    <AppLayout title="Fast Cashout - Lagoons Gaming">
       <div className="max-w-lg mx-auto">
         <div className="bg-white shadow-md rounded-lg overflow-hidden">
           <div className="px-4 py-5 sm:px-6 bg-gradient-to-r from-blue-600 to-purple-700">

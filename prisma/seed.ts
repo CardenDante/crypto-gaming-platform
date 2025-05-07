@@ -57,7 +57,7 @@ async function main() {
   const configItems = [
     { key: 'btc_address', value: process.env.DEFAULT_BTC_ADDRESS || 'bc1q87665mq57xhw3rtz2drjnnu8eyv4sljmjx93ch' },
     { key: 'lightning_address', value: process.env.DEFAULT_LIGHTNING_ADDRESS || 'lnbc1500n1p0n...[shortened]...xphz6a' },
-    { key: 'network_fee', value: process.env.NETWORK_FEE || '0.0001' }
+    { key: 'network_fee', value: process.env.NETWORK_FEE || '0.0000085' }
   ];
   
   for (const item of configItems) {
